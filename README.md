@@ -3,10 +3,10 @@
 # Code samples
 * Run async
 ```go
-res, err := hasync.Await[T](INIT_VAL, func(f hasync.Future[T]) {
+res, err := hasync.Await[int](0, func(f *hasync.Future[int]) {
     f.Ok(T)
     f.Error("Bad!")
-})
+}).Get()
 ```
 * Get results
 ```go
