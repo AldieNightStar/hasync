@@ -2,9 +2,11 @@
 
 ```go
 // Initial value
+// First value before result is ended
+// It could be any type
 const INITAL_VAL = 0
 
-res, err := Await(INITAL_VAL, func(f *Future[int]) {
+res, err := Await[int](INITAL_VAL, func(f *Future[int]) {
     // Some processing. Let it be Sleep(...) function
     time.Sleep(5 * time.Millisecond)
     // In case of ok, return result
@@ -12,7 +14,7 @@ res, err := Await(INITAL_VAL, func(f *Future[int]) {
     f.Ok(122)
     // For error
     // Later could be used with 
-    //   f.Error("Something is bad here")
+    f.Error("Something is bad here")
 }).Get()
 
 if err != nil {
