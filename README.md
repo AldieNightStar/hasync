@@ -37,7 +37,6 @@ res, err := Await[int](INITAL_VAL, func(f *Future[int]) {
     // Later result could be used with Get() or TryGet()
     f.Ok(122)
     // For error
-    // Later could be used with 
     f.Error("Something is bad here")
 }).Get()
 
