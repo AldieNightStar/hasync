@@ -52,7 +52,24 @@ func TestFutureClosedWithError(t *testing.T) {
 	if err == nil {
 		t.Fatal("Should be error here")
 	}
-	if f.GetError() != "Teddy" {
+	if err.Error() != "Teddy" {
 		t.Fatal("Error result is bad!")
+	}
+}
+
+func TestChanErr(t *testing.T) {
+	future := Await(0, func(f *Future[int]) {
+		f.Ok(1000)
+	})
+	res, _ := future.Get()
+	if res != 1000 {
+		t.Fatal("Result is not correct")
+	}
+	_, err := future.Get()
+	if err == nil {
+		t.Fatal("Here should be error!")
+	}
+	if err.Error() != ERR_CHANERR {
+		t.Fatal("Should be ERR_CHANERR error: ", err.Error())
 	}
 }

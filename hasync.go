@@ -15,7 +15,7 @@ type Future[T any] struct {
 	result T
 	c      chan int
 	closed bool
-	erorr  string
+	error  string
 }
 
 func NewFuture[T any](defVal T) *Future[T] {
@@ -29,7 +29,7 @@ func (f *Future[T]) Error(s string) bool {
 	f.c <- F_ERR
 	close(f.c)
 	f.closed = true
-	f.erorr = s
+	f.error = s
 	return true
 }
 
@@ -45,8 +45,8 @@ func (f *Future[T]) Ok(result T) bool {
 }
 
 func (f *Future[T]) TryGet() (T, error) {
-	if f.erorr != "" {
-		return f.defVal, errors.New(f.erorr)
+	if f.error != "" {
+		return f.defVal, errors.New(f.error)
 	}
 	if !f.closed {
 		return f.defVal, errors.New(ERR_NOTCLOSED)
@@ -56,7 +56,7 @@ func (f *Future[T]) TryGet() (T, error) {
 
 func (f *Future[T]) Get() (T, error) {
 	if f.closed {
-		return f.result, errors.New(ERR_NOTCLOSED)
+		return f.result, errors.New(ERR_CHANERR)
 	}
 	res, ok := <-f.c
 	if !ok {
@@ -65,15 +65,11 @@ func (f *Future[T]) Get() (T, error) {
 	if res == F_OK {
 		return f.result, nil
 	}
-	return f.defVal, errors.New(f.erorr)
+	return f.defVal, errors.New(f.error)
 }
 
 func Await[T any](defVal T, f func(*Future[T])) *Future[T] {
 	future := NewFuture(defVal)
 	go f(future)
 	return future
-}
-
-func (f *Future[T]) GetError() string {
-	return f.erorr
 }
