@@ -3,7 +3,7 @@
 # Code samples
 * Run async
 ```go
-res, err := Await[T](INIT_VAL, func(f Future[T]) {
+res, err := hasync.Await[T](INIT_VAL, func(f hasync.Future[T]) {
     f.Ok(T)
     f.Error("Bad!")
 })
@@ -30,7 +30,7 @@ f.TryGet()
 const INITAL_VAL = 0
 
 // Run async function
-res, err := Await[int](INITAL_VAL, func(f *Future[int]) {
+res, err := hasync.Await[int](INITAL_VAL, func(f *hasync.Future[int]) {
     // Some processing. Let it be Sleep(...) function
     time.Sleep(5 * time.Millisecond)
     // In case of ok, return result
