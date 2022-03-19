@@ -68,8 +68,13 @@ func (f *Future[T]) Get() (T, error) {
 	return f.defVal, errors.New(f.error)
 }
 
-func Await[T any](defVal T, f func(*Future[T])) *Future[T] {
+func Await[T any](defVal T, f func(*Future[T])) FutureResult[T] {
 	future := NewFuture(defVal)
 	go f(future)
 	return future
+}
+
+type FutureResult[T any] interface {
+	Get() (T, error)
+	TryGet() (T, error)
 }
