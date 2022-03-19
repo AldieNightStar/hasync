@@ -1,7 +1,14 @@
 package hasync
 
+import (
+	"errors"
+)
+
 const F_OK = 1
 const F_ERR = 2
+
+const ERR_NOTCLOSED = "Not closed yet!"
+const ERR_CHANERR = "Channel error!"
 
 type Future[T any] struct {
 	defVal T
@@ -37,28 +44,28 @@ func (f *Future[T]) Ok(result T) bool {
 	return true
 }
 
-func (f *Future[T]) TryGet() (T, bool) {
+func (f *Future[T]) TryGet() (T, error) {
 	if f.erorr != "" {
-		return f.defVal, false
+		return f.defVal, errors.New(f.erorr)
 	}
 	if !f.closed {
-		return f.defVal, false
+		return f.defVal, errors.New(ERR_NOTCLOSED)
 	}
-	return f.result, true
+	return f.result, nil
 }
 
-func (f *Future[T]) Get() (T, bool) {
+func (f *Future[T]) Get() (T, error) {
 	if f.closed {
-		return f.result, true
+		return f.result, errors.New(ERR_NOTCLOSED)
 	}
 	res, ok := <-f.c
 	if !ok {
-		return f.defVal, false
+		return f.defVal, errors.New(ERR_CHANERR)
 	}
 	if res == F_OK {
-		return f.result, true
+		return f.result, nil
 	}
-	return f.defVal, false
+	return f.defVal, errors.New(f.erorr)
 }
 
 func Await[T any](defVal T, f func(*Future[T])) *Future[T] {
