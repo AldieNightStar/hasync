@@ -4,7 +4,7 @@
 // Initial value
 const INITAL_VAL = 0
 
-future := Await(INITAL_VAL, func(f *Future[int]) {
+res, err := Await(INITAL_VAL, func(f *Future[int]) {
     // Some processing. Let it be Sleep(...) function
     time.Sleep(5 * time.Millisecond)
     // In case of ok, return result
@@ -13,11 +13,10 @@ future := Await(INITAL_VAL, func(f *Future[int]) {
     // For error
     // Later could be used with 
     //   f.Error("Something is bad here")
-})
-res, ok := future.Get()
+}).Get()
 
-if !ok {
-    fmt.Println("Error happened: ", future.GetError())
+if err != nil {
+    fmt.Println("Error happened: ", err.Error())
     return
 }
 fmt.Println("Resul is: ", res)
